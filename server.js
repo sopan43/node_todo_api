@@ -36,7 +36,6 @@ app.get('/todos/:id', function (req, res){
 	else{
 		res.status(404).send();
 	}
-	//res.send('Asking for todo with if of '+ req.params.id);
 });
 
 /************************************************************************************************************************************
@@ -77,7 +76,7 @@ app.post('/todos', function (req, res) {
 	todos.push(body);
 
 	res.json(body);
-})
+});
 
 /************************************************************************************************************************************
 *																																	*
@@ -96,6 +95,41 @@ app.delete('/todos/:id', function (req, res){
 	else{
 		res.status(404).json({"error": "No todo item found with id " + todoId});
 	}
+});
+
+/************************************************************************************************************************************
+*																																	*
+*													PUT(Update) Todos Items by Id													*
+*																																	*
+************************************************************************************************************************************/
+app.put('/todos/:id', function (req, res) {
+
+	var todoId = parseInt(req.params.id, 10);
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+	var body = _.pick(req.body, 'description','completed') ;
+	var validAttribute = {};
+
+	if (!matchedTodo){
+		return res.status(404).json({"error": "No todo item found with id " + todoId});
+	}
+	/************************************checking for completed property************************************/
+	if(body.hasOwnProperty('completed') && _.isBoolean(body.completed)){
+		validAttribute.completed = body.completed;
+	}else if(body.hasOwnProperty('completed')){
+		return res.status(400).send();
+	}
+	
+	/************************************checking for description property************************************/
+	if(body.hasOwnProperty('description') && _.isString(body.description) &&  body.description.trim().length > 0){
+		validAttribute.description = body.description.trim();
+	}else if(body.hasOwnProperty('description') ){
+		return res.status(400).send();
+	}
+
+	_.extend(matchedTodo, validAttribute);
+
+
+	res.json(matchedTodo);
 });
 
 /************************************************************************************************************************************
