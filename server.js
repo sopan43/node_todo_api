@@ -41,16 +41,35 @@ app.get('/todos/:id', function (req, res){
 
 /************************************************************************************************************************************
 *																																	*
+*													Get Todos Items by Completed													*
+*													(Not Working)																	*
+************************************************************************************************************************************/
+app.get('/todos/:completed', function (req, res){
+	var todoCom = (req.params.completed);
+	res.send(typeof todoCom);
+	var matchedTodo = _.findWhere(todos, {completed: todoCom});
+	if (matchedTodo){
+		res.json(matchedTodo);
+	}
+	else{
+		res.status(404).send();
+	}
+	//res.send('Asking for todo with if of '+ req.params.id);
+});
+
+/************************************************************************************************************************************
+*																																	*
 *													POST Todos Items																*
 *																																	*
 ************************************************************************************************************************************/
 app.post('/todos', function (req, res) {
-	var body = req.body;
+	var body = _.pick(req.body, 'description','completed') ;
 
 	if( !_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0){
 		return res.status(400).send();
 	}
 
+	body.description = body.description.trim();
 	body.id = todoNextId;
 	todoNextId++;
 
