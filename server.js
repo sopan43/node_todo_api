@@ -44,9 +44,9 @@ app.get('/todos/:id', function (req, res){
 *													Get Todos Items by Completed													*
 *													(Not Working)																	*
 ************************************************************************************************************************************/
-app.get('/todos/:completed', function (req, res){
+/*app.get('/todos/:completed', function (req, res){
 	var todoCom = (req.params.completed);
-	res.send(typeof todoCom);
+	res.send(parseString(typeof todoCom));
 	var matchedTodo = _.findWhere(todos, {completed: todoCom});
 	if (matchedTodo){
 		res.json(matchedTodo);
@@ -55,7 +55,8 @@ app.get('/todos/:completed', function (req, res){
 		res.status(404).send();
 	}
 	//res.send('Asking for todo with if of '+ req.params.id);
-});
+});*/
+
 
 /************************************************************************************************************************************
 *																																	*
@@ -78,7 +79,37 @@ app.post('/todos', function (req, res) {
 	res.json(body);
 })
 
+/************************************************************************************************************************************
+*																																	*
+*													Delete Todos Items by Id														*
+*																																	*
+************************************************************************************************************************************/
+app.delete('/todos/:id', function (req, res){
+	var todoId = parseInt(req.params.id, 10);
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+
+	
+	if (matchedTodo){
+		todos = _.without(todos, matchedTodo);
+		res.json(matchedTodo);
+	}
+	else{
+		res.status(404).json({"error": "No todo item found with id " + todoId});
+	}
+});
+
+/************************************************************************************************************************************
+*																																	*
+*													Starting server																	*
+*																																	*
+************************************************************************************************************************************/
 var server = app.listen(PORT, function () {
 	console.log('Express listening on port '+ PORT+ '!');
 });
 server.timeout = 2500;
+
+/************************************************************************************************************************************
+*																																	*
+*														End Of file																	*
+*																																	*
+************************************************************************************************************************************/
