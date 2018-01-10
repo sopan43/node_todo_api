@@ -16,9 +16,20 @@ app.get('/', function (req, res){
 *													Get All Todos Items																*
 *																																	*
 ************************************************************************************************************************************/
-// GET /todos
+
 app.get('/todos', function (req, res){
-	res.json(todos);
+	var queryParams = req.query;
+	var filteredTodos = todos;
+
+	if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'true'){
+	 	filteredTodos = _.where(todos, {completed: true});
+	}else if(queryParams.hasOwnProperty('completed') && queryParams.completed === 'false'){
+		filteredTodos = _.where(todos, {completed: false});
+	}else if(queryParams.hasOwnProperty('completed')){
+		return res.status(400).send();
+	}
+
+	res.json(filteredTodos);
 })
 
 /************************************************************************************************************************************
@@ -37,25 +48,6 @@ app.get('/todos/:id', function (req, res){
 		res.status(404).send();
 	}
 });
-
-/************************************************************************************************************************************
-*																																	*
-*													Get Todos Items by Completed													*
-*													(Not Working)																	*
-************************************************************************************************************************************/
-/*app.get('/todos/:completed', function (req, res){
-	var todoCom = (req.params.completed);
-	res.send(parseString(typeof todoCom));
-	var matchedTodo = _.findWhere(todos, {completed: todoCom});
-	if (matchedTodo){
-		res.json(matchedTodo);
-	}
-	else{
-		res.status(404).send();
-	}
-	//res.send('Asking for todo with if of '+ req.params.id);
-});*/
-
 
 /************************************************************************************************************************************
 *																																	*
@@ -127,8 +119,6 @@ app.put('/todos/:id', function (req, res) {
 	}
 
 	_.extend(matchedTodo, validAttribute);
-
-
 	res.json(matchedTodo);
 });
 
